@@ -1,8 +1,8 @@
 # Lab Report: Metasploitable2 – Nmap Service Version Scan
 
-**Date:** July 10, 2025
-**Author:** Noah Tubbs
-**Objective:** Identify open ports and running service versions on a Metasploitable2 VM using Nmap, as part of an initial reconnaissance and vulnerability assessment.
+* **Date:** July 10, 2025
+* **Author:** Noah Tubbs
+* **Objective:** Identify open ports and running service versions on a Metasploitable2 VM using Nmap, as part of an initial reconnaissance and vulnerability assessment.
 
 ---
 
