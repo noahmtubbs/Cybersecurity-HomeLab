@@ -94,8 +94,3 @@ Nmap done: 1 IP address (1 host up) scanned in 52.61 seconds
 
 ---
 
-## 🧠 Next Steps
-
-* Exploit FTP backdoor (vsftpd 2.3.4) using Metasploit
-* Enumerate SMB shares for credentials and files
-* Begin vulnerability mitigation by disabling unnecessary services
