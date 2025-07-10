@@ -1,37 +1,60 @@
-# Lab Report: Metasploitable2  - Nmap Service Version Scan
+# Lab Report: Metasploitable2 – Nmap Service Version Scan
 
 **Date:** July 10, 2025
+**Author:** Noah Tubbs
+**Objective:** Identify open ports and running service versions on a Metasploitable2 VM using Nmap, as part of an initial reconnaissance and vulnerability assessment.
 
-**Objective:** To perform active network scan on the Metasploitable2 target VM (192.168.100.10) using Nmap from Kali Linux, identifying open ports, running services, and their versions for initial vulnerability assessment.
+---
 
-**Tools Used:**
-* Kali Linux
-* Nmap
+##  Tools Used
 
-**Target:**
-* Metasploitable2 (IP: 192.168.100.10)
+* Kali Linux (Attacker VM)
+* Nmap (Version 7.95)
 
-**Steps Performed:**
-* Ensured SSH connectivity between Windows Host and Kali Linux (172.18.154.112).
-* Executed Nmap with service version detection from Kali Linux via SSH: `nmap -sV 192.168.100.10`
+---
+##  Target Information
 
-**Results/Findings:**
+* **Target:** Metasploitable2 VM
+* **IP Address:** `192.168.100.10`
 
-The Nmap service version scan revealed numerous open ports and running services on the Metasploitable2 target, indicating a wide attack surface for penetration testing. Some of the key findings include:
+---
 
-* **FTP (vsftpd 2.3.4) on Port 21/tcp**: This specific version is known to have a backdoor vulnerability.
-* **SSH (OpenSSH 4.7p1 Debian 8ubuntu1) on Port 22/tcp**: An older version that may be susceptible to various exploits.
-* **Telnet (Linux telnetd) on Port 23/tcp**: This service typically sends credentials in plaintext.
-* **HTTP (Apache httpd 2.2.8) on Port 80/tcp**: An outdated web server version.
-* **Samba (Samba smbd 3.X - 4.X) on Ports 139/tcp and 445/tcp**: Older Samba versions often contain critical vulnerabilities.
-* **MySQL (MySQL 5.0.51a-3ubuntu5) on Port 3306/tcp**: A significantly old database version, likely vulnerable to common database attacks.
-* **PostgreSQL (PostgreSQL DB 8.3.0 - 8.3.7) on Port 5432/tcp**: Another outdated database system.
-* **VNC (protocol 3.3) on Port 5900/tcp**: Often a target for brute-force attacks or default credential exploits.
-* **Metasploitable root shell on Port 1524/tcp**: An intentional backdoor for administrative access.
+## Steps Performed
 
-**Full Nmap Scan Output:**
-┌──(noah㉿kali)-[~]
-└─$ nmap -sV 192.168.100.10
+1. Started both Kali Linux and Metasploitable2 VMs on the same Hyper-V network.
+2. Verified Kali’s network connectivity (IP: `172.18.154.112`) to the target.
+3. Ran an Nmap service version scan with the following command:
+
+```bash
+nmap -sV 192.168.100.10
+```
+
+---
+
+## Key Findings
+
+The scan revealed a large number of open ports and outdated services. Below are selected highlights:
+
+| Port    | Service        | Version / Notes                                                                |
+| ------- | -------------- | ------------------------------------------------------------------------------ |
+| 21      | FTP            | vsftpd 2.3.4 — Known backdoor vulnerability (CVE-2011-2523)                    |
+| 22      | SSH            | OpenSSH 4.7p1 — Potentially vulnerable to brute force or outdated crypto       |
+| 23      | Telnet         | Linux telnetd — Sends credentials in plaintext                                 |
+| 80      | HTTP           | Apache 2.2.8 — Outdated and misconfigurable web server                         |
+| 139/445 | Samba          | Samba smbd 3.X–4.X — Old versions vulnerable to RCE (e.g., MS08-067)           |
+| 3306    | MySQL          | MySQL 5.0.51a — Vulnerable to auth bypass and weak configurations              |
+| 5432    | PostgreSQL     | PostgreSQL 8.3.x — Obsolete version, weak auth or default credentials possible |
+| 5900    | VNC            | Protocol 3.3 — Often unencrypted, brute-forceable                              |
+| 1524    | Backdoor Shell | Intentional root shell running on TCP/1524                                     |
+
+---
+
+## Full Nmap Output
+
+<details>
+<summary>Click to expand full scan result</summary>
+
+```text
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-07-10 15:46 CDT
 Nmap scan report for 192.168.100.10
 Host is up (0.0048s latency).
@@ -61,7 +84,18 @@ PORT     STATE SERVICE     VERSION
 8009/tcp open  ajp13       Apache Jserv (Protocol v1.3)
 8180/tcp open  http        Apache Tomcat/Coyote JSP engine 1.1
 MAC Address: 00:15:5D:00:28:02 (Microsoft)
-Service Info: Hosts:  metasploitable.localdomain, irc.Metasploitable.LAN; OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+Service Info: Hosts: metasploitable.localdomain, irc.Metasploitable.LAN; OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
 
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/.
 Nmap done: 1 IP address (1 host up) scanned in 52.61 seconds
+```
+
+</details>
+
+---
+
+## 🧠 Next Steps
+
+* Exploit FTP backdoor (vsftpd 2.3.4) using Metasploit
+* Enumerate SMB shares for credentials and files
+* Begin vulnerability mitigation by disabling unnecessary services
