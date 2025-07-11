@@ -92,5 +92,6 @@ Nmap done: 1 IP address (1 host up) scanned in 52.61 seconds
 
 </details>
 
+![Nmap Scan](images/Metasploitable_Nmap_Scan.png)
 ---
 
