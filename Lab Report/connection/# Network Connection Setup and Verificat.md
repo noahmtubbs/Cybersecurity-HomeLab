@@ -2,7 +2,7 @@
 
 ---
 
-## Checking Network Configuration on Kali Linux
+## Checking Network Configuration on Metasploitable
 
 First, verify the network interfaces and IP addresses on Kali using:
 
@@ -12,7 +12,7 @@ ifconfig
 
 This shows all active interfaces, their IPs, and statuses.
 
-![Kali ifconfig output](images/ifconfig.png)
+![Metasploitable ifconfig output](images/ifconfig.png)
 
 ---
 
@@ -30,8 +30,3 @@ Successful replies indicate network connectivity and proper routing.
 
 ---
 
-## Next Steps
-
-Once connectivity is confirmed, proceed with scanning the target or launching exploits.
-
-```
