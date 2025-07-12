@@ -29,8 +29,6 @@ This repository documents my personal cybersecurity lab environment using Hyper-
 - Result: Remote root shell through command injection.
 - Post-Exploitation: Established persistence by adding a new root user.
 
-## In Progress
-
 ### 4. PostgreSQL 8.3.7 Default Credentials and Payload Delivery
 - Vulnerability: Default credentials and exposed PostgreSQL service on port 5432.
 - Enumeration: Service and version identified using `nmap -sV -p 5432`.
