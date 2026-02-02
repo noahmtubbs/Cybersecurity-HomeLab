@@ -1,46 +1,62 @@
-# Cybersecurity Home Lab
+# Cybersecurity Home Lab: Purple Team Simulation
 
-This repository documents my personal cybersecurity lab environment using Hyper-V to host Kali Linux and Metasploitable2. It focuses on vulnerability scanning, exploitation, and post-exploitation techniques using real-world tools and scenarios.
+## 🚩 Project Overview
+This repository documents my personal cybersecurity lab designed to simulate a **Purple Team** environment (Attack & Defense).
+I use this lab to practice the full lifecycle of a cyber attack:
+1.  **Red Team:** Executing real-world exploits using Kali Linux and Metasploit.
+2.  **Blue Team:** Detecting those attacks in real-time using Snort IDS and Splunk SIEM.
 
-## Tools Used
+## 🛠️ Environment & Tools
+* **Virtualization:** Hyper-V on Windows 11 Pro
+* **Attacker Node:** Kali Linux 2024.1 (Metasploit, Nmap, Hydra)
+* **Defensive Node:** Ubuntu Server 22.04 (Snort IDS, Splunk Universal Forwarder)
+* **Vulnerable Target:** Metasploitable2 (Intentionally vulnerable Linux VM)
+* **SIEM:** Splunk Enterprise (Log Analysis & Dashboarding)
 
-- **Host:** Windows 11 Pro with Hyper-V
-- **Attacker:** Kali Linux 2024.1
-- **Target:** Metasploitable2
-- **Tools:** Nmap, Metasploit Framework, Netcat, Searchsploit
+---
 
-## Exploits Completed
+## 🛡️ BLUE TEAM: Defensive Operations (Splunk & Snort)
+*Focus: Network Intrusion Detection, Log Ingestion, and SIEM Visualization.*
 
-### 1. VSFTPD v2.3.4 Backdoor
+### 1. Intrusion Detection with Snort
+* **Configuration:** Deployed Snort in NIDS mode on the Ubuntu target to monitor live interface traffic.
+* **Custom Rules:** Authored signatures in `local.rules` to detect reconnaissance activity.
+    * **ICMP Sweeps:** Created rules to flag ping sweeps often used in initial discovery.
+    * **Port Scanning:** Tuned rules to detect Nmap TCP stealth scans.
+* **Result:** Successfully generated alerts in `/var/log/snort` verifying detection of Red Team scans.
 
-- **Vulnerability:** Hardcoded backdoor triggered by a specially crafted username.
-- **Exploit Module:** `exploit/unix/ftp/vsftpd_234_backdoor`
-- **Result:** Root shell opened on port 6200 after login attempt with `:)`.
-- **Post-Exploitation:** Accessed `/etc/passwd` and successfully cracked user passwords.
+### 2. SIEM Log Analysis with Splunk
+* **Log Ingestion:** Configured Splunk Universal Forwarder to ship system logs and IDS alerts to the Splunk Indexer.
+* **SSH Brute Force Detection:**
+    * Ingested `/var/log/auth.log` to monitor authentication attempts.
+    * Built a Splunk dashboard to visualize "Failed Password" spikes in real-time.
+* **Alert Correlation:** Correlated Snort alerts with system logs to validate successful vs. blocked attack attempts.
 
-### 2. Samba Remote Command Execution (usermap script)
+---
 
-- **Vulnerability:** CVE-2007-2447, command injection via the usermap script.
-- **Exploit Module:** `exploit/multi/samba/usermap_script`
-- **Result:** Shell access gained on Metasploitable2.
-- **Post-Exploitation:** Created a proof-of-concept file in `/root/` to verify access.
+## ⚔️ RED TEAM: Offensive Operations (Metasploit)
+*Focus: Vulnerability Scanning, Exploitation, and Post-Exploitation.*
 
-### 3. UnrealIRCd 3.2.8.1 Backdoor
+### 1. PostgreSQL Privilege Escalation
+* **Vulnerability:** Default credentials on port 5432 coupled with an outdated SUID-enabled Nmap binary.
+* **Exploit Chain:**
+    * Used `auxiliary/scanner/postgres/postgres_login` to authenticate (postgres:postgres).
+    * Deployed `exploit/linux/postgres/postgres_payload` to gain a Meterpreter shell.
+    * **Privilege Escalation:** Abused the SUID bit on `/usr/bin/nmap` using interactive mode (`!sh`) to escalate from `postgres` user to `root`.
 
-- **Vulnerability:** CVE-2010-2075, an intentional backdoor in UnrealIRCd source code.
-- **Exploit Module:** `exploit/unix/irc/unreal_ircd_3281_backdoor`
-- **Result:** Remote root shell obtained through command injection.
-- **Post-Exploitation:** Established persistence by adding a new root user account.
+### 2. VSFTPD v2.3.4 Backdoor
+* **Vulnerability:** Hardcoded backdoor in VSFTPD v2.3.4 source code.
+* **Exploit:** `exploit/unix/ftp/vsftpd_234_backdoor`
+* **Result:** Triggered the backdoor by sending a smiley face `:)` in the username, opening a root shell on port 6200.
+* **Post-Exploitation:** Dumped `/etc/passwd` to harvest user credentials.
 
-### 4. PostgreSQL 8.3.7 Default Credentials and Privilege Escalation
+### 3. Samba Remote Command Execution
+* **Vulnerability:** CVE-2007-2447 (Username Map Script).
+* **Exploit:** `exploit/multi/samba/usermap_script`
+* **Result:** Gained shell access by injecting shell meta-characters into the username field during authentication.
 
-- **Vulnerability:** Default credentials on an exposed PostgreSQL service (port 5432), coupled with an outdated SUID-enabled Nmap binary.
-- **Enumeration:** Service and version identified using `nmap -sV -p 5432`.
-- **Exploitation:**
-    - Used `auxiliary/scanner/postgres/postgres_login` to authenticate with `postgres:postgres`.
-    - Deployed `exploit/linux/postgres/postgres_payload` with a Meterpreter reverse shell payload (`linux/x86/meterpreter/reverse_tcp`) for advanced session control.
-- **Post-Exploitation:**
-    - Initial Meterpreter session verified with `sysinfo` and `getuid`/`id` (as the `postgres` user).
-    - Performed system enumeration, identifying the outdated kernel (`2.6.24`) and crucial SUID-enabled binaries (e.g., `/usr/bin/nmap`).
-    - Successfully **escalated privileges to root** by exploiting the SUID `nmap` binary's interactive mode (`!sh`).
-    - Gained full root access to the target system.
+### 4. UnrealIRCd Backdoor
+* **Vulnerability:** CVE-2010-2075 (Intentional backdoor in source archive).
+* **Exploit:** `exploit/unix/irc/unreal_ircd_3281_backdoor`
+* **Result:** Obtained remote root shell via command injection.
+* **Persistence:** Created a new root-level user account to maintain access after the initial session closed.
