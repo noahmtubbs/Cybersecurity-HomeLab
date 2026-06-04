@@ -20,7 +20,7 @@ I use this lab to practice the full lifecycle of a cyber attack:
 
 ### 1. Intrusion Detection with Snort
 * **Configuration:** Deployed Snort in NIDS mode on the Ubuntu target to monitor live interface traffic.
-* **Custom Rules:** Authored signatures in `local.rules` to detect reconnaissance activity.
+* **Custom Rules:** Authored signatures in `local.rules` to detect reconnaissance activity.d
     * **ICMP Sweeps:** Created rules to flag ping sweeps often used in initial discovery.
     * **Port Scanning:** Tuned rules to detect Nmap TCP stealth scans.
 * **Result:** Successfully generated alerts in `/var/log/snort` verifying detection of Red Team scans.
